@@ -1,4 +1,4 @@
-This repository contains a set of scripts for generating and visualizing street grade data.
+This repository contains a set of scripts for generating and visualizing street grade data. Uses python 3.
 
 ## How to use
 1. First, download USGS elevation data IMG files. You can run `download_dc_usgs.sh` to download data for DC,
@@ -26,6 +26,9 @@ to the root of this repository as `streets.json`.
 
 4. Use https://github.com/tyrasd/osmtogeojson to convert `streets.json` to `streets.geojson`.
 
-5. Run `elevationfetcher.py`. This should create a file named `slopes.json`.
+5. Install python requirements using `pip install -r requirements.txt`. You may need to install the gdal development
+package for your distribution first.
 
-6. Copy `slopes.json` to the `viz` folder. Serve the contents of `viz` as a static webpage to see the visualization.
+6. Run `elevationfetcher.py`. This should create a file named `slopes.json`.
+
+7. Copy `slopes.json` to the `viz` folder. Serve the contents of `viz` as a static webpage to see the visualization.
