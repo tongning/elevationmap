@@ -1,0 +1,7 @@
+*.img
+env
+.vscode
+viz/slopes.json
+*.geojson
+*.osm
+*.json

@@ -1,0 +1,101 @@
+<html>
+
+<head>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCpk1ib74Vo9z7RFT3x_WFjeAwe8sedBJ4&libraries=geometry"></script>
+    <style>
+        html,
+        body,
+        #map_canvas {
+            height: 100%;
+            width: 100%;
+            margin: 0px;
+            padding: 0px
+        }
+    </style>
+    <script>
+        var map;
+        var bounds = new google.maps.LatLngBounds();
+
+        function initialize() {
+            var xhr = new XMLHttpRequest();
+            try {
+                xhr.open('GET', 'slopes.json', true);
+            } catch (err) {
+                //		alert(err.description);
+            }
+            xhr.onload = function () {
+                //		alert('data loaded');
+                slopedata = JSON.parse(this.responseText);
+                renderMap(slopedata);
+                //updateGradeLineVisibility();
+                //updateDirectionStyles();
+                //activateGradeLines();
+                // Set up non-visible items last:
+                setTimeout(function () {
+                    //updateDirectionStyles(true);
+                    //activateGradeLines(true);
+                    //addGradeLineListeners();
+                }, 500);
+            };
+            xhr.send();
+        }
+        
+        function renderMap(slopedata) {
+            map = new google.maps.Map(
+                document.getElementById("map_canvas"), {
+                    center: new google.maps.LatLng(38.85, -76.9),
+                    zoom: 13,
+                    mapTypeId: google.maps.MapTypeId.ROADMAP
+                });
+
+            for (var i = 0; i<slopedata['data'].length; i++) {
+                
+                encoded_line = slopedata['data'][i][0];
+                slope = slopedata['data'][i][1];
+                console.log("Found a polyline", encoded_line, slope);
+                path = google.maps.geometry.encoding.decodePath(encoded_line);
+                obj = new google.maps.Polyline({ path: path });
+                var opacity = (1 / 30) * Math.min(slope, 30); // 30% grade = 1.0 opacity
+                obj.setOptions({
+                    strokeOpacity: opacity,
+                    strokeWeight: 100,
+                });
+                obj.setMap(map)
+            }
+            /*
+            var jsonData = {
+                "overview_polyline": {
+                    "points": "e`miGhmocNaN~DiBiNe@gEkEek@kNez@cJqq@sk@pGos@v]_}@aF_y@qm@qDe~@w]g~@gZ_Jo_@m_@yNsFgUpMov@~QebBrJq`BjTsx@w@kOqbEq_@qkCcf@}}Dej@yzCuf@o{Ba]m~EtVewAnBa`@sNmm@}dDufGqwA_|D_z@g~CmtBkuOrBmtCyG_yCam@{`Ee]qkB}d@ucDmDe|Aha@e}At]{v@xD}e@yf@aeIm^{rEgp@ahBiZu`BkVueH}gDwuXu`Fi__@yZecHgoAgyIl[ybCo^sgD_n@akBaJmeBog@yyAe`@ayB~FifCjNkmAzTwpAgf@cpFy~@{lJsg@ojHyi@e_Fq}@o`Dog@}tBoYmz@y`@sf@qf@ohCkLugBuv@seAg[ul@mMowBqc@iiC}eAcwCqm@_fBmuAypFyIiqA}BwyBy`@ogAwt@ypBezC{dIahBwxJgb@ytCw~AwvJkQwu@{t@yrCg{@s{Fgb@ehDzKsdAxO}vAiRmpCwcAorNuwAgdS_r@imJq[orAk]wrA_TyzAnFefAa\\guB_OmwAwF{tCwMcbDcr@m}_@}Qo_RgMo|A|d@kpAne@u{Brb@wnDzNkuB_D{v@eSgf@w\\ieAyb@guCii@ifCga@i_Amc@m]urAyoD}o@kiIsr@opQuLkhAc_@q`Bq\\}bEeEyi@iE}t@pHi|@tBmlBebB{qHq_BinFoWgpBoDuqEob@k{ConAedC}L}h@yd@yfAgz@}gAaZi_@m}@mcBwyAaj@_bBg|@csBm_Bo|BkaC{iBqsB_YqyBxEmtBks@aoB{RgLa~@bCcr@cLyoAemBeg@gt@_}@e`@on@uu@etA}vCqp@ubAklDgeGmxFiqHaqFoeHa[wbBu]}gAuoDeeG{uAooB_uAsy@om@ugAu_L{xSshEe_KieDm|KcfIcuWeUcOwy@aP{QuUg`BipF{P_l@klAgaEmjEs}NsvAiyFs}@izFjwAqrGtHkbCeB{cEql@g~CgSk|@mB}oAqNekEgw@cmDo_BgjFqqC}gH}`CwvG}cA{cB}nFowQ_t@an@efBmpE_oAsvCka@mwBk_CqbGuu@qfB{uAmrDivDw|E{nAqbDmpCyaJgdCejHk~@owAsw@adAm_@abA}Ven@qCou@cKeiBca@_cBmlAyjAsn@_kCk}@smDkVg{Bk}@gcHox@_sEaPwdC~KazF{EcpCrEmeGl]auBeEi~@yiAovCwwAgsC{i@oSsbAu~Ay_AmaBk_@iKak@mh@_BmBk@wHvG@dBvA"
+                }
+            };
+            var path = google.maps.geometry.encoding.decodePath(jsonData.overview_polyline.points);
+            console.log(path);
+            for (var i = 0; i < path.length; i++) {
+                bounds.extend(path[i]);
+            }
+
+            var polyline = new google.maps.Polyline({
+                path: path,
+                strokeColor: '#FF0000',
+                strokeOpacity: 0.8,
+                strokeWeight: 2,
+                fillColor: '#FF0000',
+                fillOpacity: 0.35,
+                map: map
+                // strokeColor: "#0000FF",
+                // strokeOpacity: 1.0,
+                // strokeWeight: 2
+            });
+            polyline.setMap(map);
+            map.fitBounds(bounds);*/
+        }
+
+        google.maps.event.addDomListener(window, "load", initialize);
+    </script>
+</head>
+
+<body>
+    <div id="map_canvas" style="border: 2px solid #3872ac;"></div>
+</body>
+
+</html>
