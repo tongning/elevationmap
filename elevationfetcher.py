@@ -4,7 +4,7 @@ import os
 import mpu
 import polyline
 
-rasters = ['USGS_NED_13_n39w077_IMG.img','USGS_NED_13_n43w090_IMG.img']
+rasters = ['USGS_NED_13_n39w077_IMG.img','USGS_NED_13_n39w078_IMG.img','USGS_NED_13_n40w077_IMG.img','USGS_NED_13_n40w078_IMG.img']
 
 def get_coord_elevation_meters(lng, lat):
     for elevationfile in rasters:
